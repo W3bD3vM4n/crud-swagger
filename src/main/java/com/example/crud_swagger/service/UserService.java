@@ -23,6 +23,9 @@ public class UserService {
     }
 
     public User saveUser(User user) {
+        if (user.getId() != null && !iUserRepository.existsById(user.getId())) {
+            throw new IllegalArgumentException("User with ID " + user.getId() + " does not exist.");
+        }
         return iUserRepository.save(user);
     }
 

@@ -1,5 +1,8 @@
 package com.example.crud_swagger.controller;
 
+import com.example.crud_swagger.dto.CreateUserDTO;
+import com.example.crud_swagger.dto.UserResponseDTO;
+import com.example.crud_swagger.mapper.IUserMapper;
 import com.example.crud_swagger.model.User;
 import com.example.crud_swagger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private IUserMapper iUserMapper;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponseDTO> getAllUsers() {
+        return iUserMapper.toResponseDTOList(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
@@ -28,19 +33,31 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserDTO createUserDTO) {
+        if (createUserDTO.getName() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        User user = iUserMapper.toEntity(createUserDTO);
+        User savedUser = userService.saveUser(user);
+        UserResponseDTO responseDTO = iUserMapper.toResponseDTO(savedUser);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody CreateUserDTO createUserDTO) {
         return userService.getUserById(id)
-                .map(existingUser ->{
-                    existingUser.setName(user.getName());
-                    existingUser.setEmail(user.getEmail());
-                    return ResponseEntity.ok(userService.saveUser(existingUser));
-                })
-                .orElse(ResponseEntity.notFound().build());
+            .map(existingUser -> {
+                existingUser.setName(createUserDTO.getName());
+                existingUser.setEmail(createUserDTO.getEmail());
+
+                User updatedUser = userService.saveUser(existingUser);
+                UserResponseDTO responseDTO = iUserMapper.toResponseDTO(updatedUser);
+
+                return ResponseEntity.ok(responseDTO);
+            })
+        .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
