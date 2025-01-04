@@ -1,6 +1,6 @@
 package com.example.crud_swagger.controller;
 
-import com.example.crud_swagger.dto.CreateUserDTO;
+import com.example.crud_swagger.dto.UserCreateDTO;
 import com.example.crud_swagger.dto.UserResponseDTO;
 import com.example.crud_swagger.mapper.IUserMapper;
 import com.example.crud_swagger.model.User;
@@ -33,12 +33,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody CreateUserDTO createUserDTO) {
-        if (createUserDTO.getName() == null) {
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        if (userCreateDTO.getName() == null) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        User user = iUserMapper.toEntity(createUserDTO);
+        User user = iUserMapper.toEntity(userCreateDTO);
         User savedUser = userService.saveUser(user);
         UserResponseDTO responseDTO = iUserMapper.toResponseDTO(savedUser);
 
@@ -46,11 +46,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody CreateUserDTO createUserDTO) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserCreateDTO userCreateDTO) {
         return userService.getUserById(id)
             .map(existingUser -> {
-                existingUser.setName(createUserDTO.getName());
-                existingUser.setEmail(createUserDTO.getEmail());
+                existingUser.setName(userCreateDTO.getName());
+                existingUser.setEmail(userCreateDTO.getEmail());
 
                 User updatedUser = userService.saveUser(existingUser);
                 UserResponseDTO responseDTO = iUserMapper.toResponseDTO(updatedUser);

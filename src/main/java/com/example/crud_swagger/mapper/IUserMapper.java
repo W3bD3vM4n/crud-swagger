@@ -1,6 +1,6 @@
 package com.example.crud_swagger.mapper;
 
-import com.example.crud_swagger.dto.CreateUserDTO;
+import com.example.crud_swagger.dto.UserCreateDTO;
 import com.example.crud_swagger.dto.UserResponseDTO;
 import com.example.crud_swagger.model.User;
 import org.mapstruct.Mapper;
@@ -14,6 +14,6 @@ public interface IUserMapper {
 
     List<UserResponseDTO> toResponseDTOList(List<User> users);
 
-    User toEntity(CreateUserDTO dto);
+    User toEntity(UserCreateDTO dto);
 
 }
