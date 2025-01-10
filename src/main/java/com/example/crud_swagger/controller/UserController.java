@@ -22,14 +22,14 @@ public class UserController {
 
     @GetMapping
     public List<UserResponseDTO> getAllUsers() {
-        return iUserMapper.toResponseDTOList(userService.getAllUsers());
+        return iUserMapper.mapToUserResponseDTOList(userService.getUsersListFromRepository());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return userService.getUserByIdFromRepository(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -38,22 +38,22 @@ public class UserController {
             return ResponseEntity.badRequest().body(null);
         }
 
-        User user = iUserMapper.toEntity(userCreateDTO);
-        User savedUser = userService.saveUser(user);
-        UserResponseDTO responseDTO = iUserMapper.toResponseDTO(savedUser);
+        User user = iUserMapper.mapToUser(userCreateDTO);
+        User savedUser = userService.saveUserFromRepository(user);
+        UserResponseDTO responseDTO = iUserMapper.mapToUserResponseDTO(savedUser);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserCreateDTO userCreateDTO) {
-        return userService.getUserById(id)
+        return userService.getUserByIdFromRepository(id)
             .map(existingUser -> {
                 existingUser.setName(userCreateDTO.getName());
                 existingUser.setEmail(userCreateDTO.getEmail());
 
-                User updatedUser = userService.saveUser(existingUser);
-                UserResponseDTO responseDTO = iUserMapper.toResponseDTO(updatedUser);
+                User updatedUser = userService.saveUserFromRepository(existingUser);
+                UserResponseDTO responseDTO = iUserMapper.mapToUserResponseDTO(updatedUser);
 
                 return ResponseEntity.ok(responseDTO);
             })
@@ -62,7 +62,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        userService.deleteUserFromRepository(id);
         return ResponseEntity.noContent().build();
     }
 

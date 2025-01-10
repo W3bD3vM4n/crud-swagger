@@ -14,22 +14,22 @@ public class UserService {
     @Autowired
     private IUserRepository iUserRepository;
 
-    public List<User> getAllUsers() {
+    public List<User> getUsersListFromRepository() {
         return iUserRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserByIdFromRepository(Long id) {
         return iUserRepository.findById(id);
     }
 
-    public User saveUser(User user) {
+    public User saveUserFromRepository(User user) {
         if (user.getId() != null && !iUserRepository.existsById(user.getId())) {
             throw new IllegalArgumentException("User with ID " + user.getId() + " does not exist.");
         }
         return iUserRepository.save(user);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUserFromRepository(Long id) {
         iUserRepository.deleteById(id);
     }
 

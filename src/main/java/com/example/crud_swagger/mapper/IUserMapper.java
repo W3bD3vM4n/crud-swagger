@@ -10,10 +10,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface IUserMapper {
 
-    UserResponseDTO toResponseDTO(User user);
+    UserResponseDTO mapToUserResponseDTO(User user);
 
-    List<UserResponseDTO> toResponseDTOList(List<User> users);
+    List<UserResponseDTO> mapToUserResponseDTOList(List<User> users);
 
-    User toEntity(UserCreateDTO dto);
+    User mapToUser(UserCreateDTO dto);
 
 }
